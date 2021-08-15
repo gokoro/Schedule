@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRecoilValue } from 'recoil'
 import { currentDayState } from '../states/currentTime'
 import { LocaleMessageState } from '../states/preferredLanguage'
@@ -67,30 +67,29 @@ const HeaderLinks = ({ isDisplayColor }) => {
     </div>
   )
 }
-const DayLink = (props) => {
+const DayLink = ({ value, day, text, isDisplayColor }) => {
   const {
     components: { header: dayLocaleSet },
   } = useRecoilValue(LocaleMessageState)
 
-  const isTodayActive = props.day === props.value
+  const [dayState, setDayState] = useState(day)
 
-  const { pathname } = useRouter()
-  const TRANSPARENT_PATH = `/anime/[id]/[name]`
+  useEffect(() => {
+    setDayState(day)
+  }, [day])
+
+  const isTodayActive = dayState === value
 
   return (
     <>
       <ClassNameAsPathLink
         activeClassName="active"
         href="/[day]"
-        as={`/${props.value}`}
+        as={`/${value}`}
       >
         <a>
-          <div className={`now${isTodayActive ? ' nowActive' : ''}`}>
-            {dayLocaleSet.now}
-          </div>
-          <div className={`today${isTodayActive ? ' nowActive' : ''}`}>
-            {props.text}
-          </div>
+          {isTodayActive && <div className="now">{dayLocaleSet.now}</div>}
+          <div className={`today${isTodayActive && ' nowActive'}`}>{text}</div>
         </a>
       </ClassNameAsPathLink>
       <style jsx>{`
@@ -106,31 +105,30 @@ const DayLink = (props) => {
           padding: 12px 0;
           height: fit-content;
           letter-spacing: 0;
-          color: ${!props.isDisplayColor ? '#FFF ' : 'var(--sub-text-color);'};
+          color: ${!isDisplayColor ? '#FFF ' : 'var(--sub-text-color);'};
           border-bottom: 2px solid transparent;
         }
         .now {
-          display: none;
-        }
-        .now.nowActive {
           position: absolute;
           width: 100%;
           font-size: 10px;
           left: 0;
           top: -3px;
           display: initial;
+          font-weight: bold;
+          color: ${!isDisplayColor ? '#FFF ' : '#000000'};
         }
         .nowActive {
           font-weight: bold;
-          color: ${!props.isDisplayColor ? '#FFF ' : '#000000'};
+          color: ${!isDisplayColor ? '#FFF ' : '#000000'};
         }
         .active {
           border-bottom: 2px solid #6c5ce7;
-          color: ${!props.isDisplayColor ? '#FFF ' : '#6c5ce7'};
+          color: ${!isDisplayColor ? '#FFF ' : '#6c5ce7'};
           font-weight: bold;
         }
         .active .nowActive {
-          color: ${!props.isDisplayColor ? '#FFF ' : '#6c5ce7'};
+          color: ${!isDisplayColor ? '#FFF ' : '#6c5ce7'};
         }
       `}</style>
     </>
