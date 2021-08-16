@@ -1,59 +1,47 @@
 import * as React from 'react'
-import { useState, useEffect } from 'react'
 import { useRecoilValue } from 'recoil'
 import { currentDayState } from '../states/currentTime'
 import { LocaleMessageState } from '../states/preferredLanguage'
 import ClassNameAsPathLink from './ClassNameAsPathLink'
-import { useRouter } from 'next/router'
 
 const HeaderLinks = ({ isDisplayColor }) => {
   const {
     common: { day: dayLocaleSet },
   } = useRecoilValue(LocaleMessageState)
 
-  const currentDayRecoil = useRecoilValue(currentDayState)
-  const [currentDay] = useState(currentDayRecoil)
-
   return (
     <div className="wrapper">
       <DayLink
-        day={currentDay}
         text={dayLocaleSet.sun}
         isDisplayColor={isDisplayColor}
         value="sun"
       />
       <DayLink
-        day={currentDay}
         text={dayLocaleSet.mon}
         isDisplayColor={isDisplayColor}
         value="mon"
       />
       <DayLink
-        day={currentDay}
         text={dayLocaleSet.tue}
         isDisplayColor={isDisplayColor}
         value="tue"
       />
       <DayLink
-        day={currentDay}
         text={dayLocaleSet.wed}
         isDisplayColor={isDisplayColor}
         value="wed"
       />
       <DayLink
-        day={currentDay}
         text={dayLocaleSet.thu}
         isDisplayColor={isDisplayColor}
         value="thu"
       />
       <DayLink
-        day={currentDay}
         text={dayLocaleSet.fri}
         isDisplayColor={isDisplayColor}
         value="fri"
       />
       <DayLink
-        day={currentDay}
         text={dayLocaleSet.sat}
         isDisplayColor={isDisplayColor}
         value="sat"
@@ -67,18 +55,13 @@ const HeaderLinks = ({ isDisplayColor }) => {
     </div>
   )
 }
-const DayLink = ({ value, day, text, isDisplayColor }) => {
+const DayLink = ({ value, text, isDisplayColor }) => {
   const {
     components: { header: dayLocaleSet },
   } = useRecoilValue(LocaleMessageState)
+  const currentDay = useRecoilValue(currentDayState)
 
-  const [dayState, setDayState] = useState(day)
-
-  useEffect(() => {
-    setDayState(day)
-  }, [day])
-
-  const isTodayActive = dayState === value
+  const isTodayActive = currentDay === value
 
   return (
     <>
@@ -89,7 +72,9 @@ const DayLink = ({ value, day, text, isDisplayColor }) => {
       >
         <a>
           {isTodayActive && <div className="now">{dayLocaleSet.now}</div>}
-          <div className={`today${isTodayActive && ' nowActive'}`}>{text}</div>
+          <div className={`today${isTodayActive ? ' nowActive' : ''}`}>
+            {text}
+          </div>
         </a>
       </ClassNameAsPathLink>
       <style jsx>{`
